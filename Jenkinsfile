@@ -20,8 +20,8 @@ pipeline {
                 echo 'build & push docker image'
                 script {
                         withDockerRegistry(credentialsId: 'docker-cred', toolName: 'docker') {
-                            sh "docker build -t devopsuses/myfrontend:${env.DOCKER_TAG} ."
-                            sh "docker push devopsuses/myfrontend:${env.DOCKER_TAG}"
+                            sh "docker build -t devopsuses/myfrontend-service:${env.DOCKER_TAG} ."
+                            sh "docker push devopsuses/myfrontend-service:${env.DOCKER_TAG}"
                     }
                 }
             }
