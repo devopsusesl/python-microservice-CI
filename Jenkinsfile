@@ -43,7 +43,7 @@ pipeline {
 
                     // Update mynews.yaml with the new Docker tag using sed
                     dir('python-microservice-CD') {
-                        sh "sed -i 's|image: devopsuses/mymynews-service:.*|image: devopsuses/mymynews-service:${env.DOCKER_TAG}|g' application/K8/CANARY-DEPLOYMENT-WITH-ARGO-ISTIO/mynews.yaml"
+                        sh "sed -i 's|image: devopsuses/mynews-service:.*|image: devopsuses/mynews-service:${env.DOCKER_TAG}|g' application/K8/CANARY-DEPLOYMENT-WITH-ARGO-ISTIO/mynews.yaml"
 
                         // Configure Git user and commit the changes
                         sh 'git config user.name "devopsusesl"'
