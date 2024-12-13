@@ -26,6 +26,39 @@ pipeline {
                 }
             }
         }
+        stage('Clone and Update k8-manifest.yml') {
+            steps {
+                script {
+                    // Check if the directory exists and delete if it does
+                    if (fileExists('python-microservice-CD')) {
+                        sh 'rm -rf python-microservice-CD'
+                    }
+
+                    // Clone the repository securely using HTTPS
+                    withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                        sh 'git clone https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/devopsusesl/python-microservice-CD.git'
+                        sh 'pwd'
+                        sh 'ls -a'
+                    }
+
+                    // Update trending.yaml with the new Docker tag using sed
+                    dir('python-microservice-CD') {
+                        sh "sed -i 's|image: devopsuses/myfreeads-service:.*|image: devopsuses/myfreeads-service:${env.DOCKER_TAG}|g' application/K8/CANARY-DEPLOYMENT-WITH-ARGO-ISTIO/my-freeads.yaml"
+
+                        // Configure Git user and commit the changes
+                        sh 'git config user.name "devopsusesl"'
+                        sh 'git config user.email "devopsuse@gmail.com"'
+                        sh 'git add application/K8/CANARY-DEPLOYMENT-WITH-ARGO-ISTIO/my-freeads.yaml'
+                        sh "git commit -m 'Updated Docker image tag to ${env.DOCKER_TAG}'"
+
+                        // Push the changes back to the repository using credentials
+                        withCredentials([usernamePassword(credentialsId: 'github-cred', usernameVariable: 'GIT_USERNAME', passwordVariable: 'GIT_PASSWORD')]) {
+                            sh 'git push https://${GIT_USERNAME}:${GIT_PASSWORD}@github.com/devopsusesl/python-microservice-CD.git'
+                        }
+                    }
+                }
+            }
+        }
         
     }
 }
